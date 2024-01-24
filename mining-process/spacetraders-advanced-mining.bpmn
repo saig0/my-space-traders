@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="08b1b84" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.3.0" camunda:diagramRelationId="bf024ae4-7703-4caa-b8e7-fa121347235b">
+  <bpmn:process id="philipps-space-traders-mining-process" name="Philipp&#39;s SpaceTraders mining process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start new game">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="space-traders-new-game" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1727dj3</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1727dj3" sourceRef="StartEvent_1" targetRef="Activity_1x82no7" />
+    <bpmn:callActivity id="Activity_1x82no7" name="Start the game">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-new-game" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=token" target="token" />
+          <zeebe:output source="=current_system" target="current_system" />
+          <zeebe:output source="=current_waypoint" target="current_waypoint" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1727dj3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jolgtx</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0jolgtx" sourceRef="Activity_1x82no7" targetRef="Activity_06bbvjy" />
+    <bpmn:callActivity id="Activity_06bbvjy" name="Accept a contract">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-accept-contract" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=contract" target="contract" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0jolgtx</bpmn:incoming>
+      <bpmn:outgoing>Flow_06aljds</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_1lqilcv" name="Navigate to the asteroid field">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-navigate-ship" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=command_ship" target="current_ship" />
+          <zeebe:input source="=asteroid_field" target="target" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0tqu4me</bpmn:incoming>
+      <bpmn:incoming>Flow_0jxx8mk</bpmn:incoming>
+      <bpmn:outgoing>Flow_0t2ka4o</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_01feyxg" name="Deliver contract goods">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-deliver-contract-goods" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=command_ship" target="current_ship" />
+          <zeebe:input source="=contract" target="contract" />
+          <zeebe:output source="=contract_fulfilled" target="contract_fulfilled" />
+          <zeebe:output source="=goods_delivered" target="contract_goods_delivered" />
+          <zeebe:output source="=cargo" target="cargo" />
+          <zeebe:output source="=contract" target="contract" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1yng76a</bpmn:incoming>
+      <bpmn:outgoing>Flow_0547krs</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="Gateway_1axuzad" name="Is contract fulfilled?" default="Flow_19h7ghj">
+      <bpmn:incoming>Flow_0gyvae0</bpmn:incoming>
+      <bpmn:outgoing>Flow_04nja0n</bpmn:outgoing>
+      <bpmn:outgoing>Flow_19h7ghj</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0547krs" sourceRef="Activity_01feyxg" targetRef="Activity_0iijzms" />
+    <bpmn:sequenceFlow id="Flow_04nja0n" name="Yes" sourceRef="Gateway_1axuzad" targetRef="Event_0r1s0pz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=contract_fulfilled</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_19h7ghj" name="No" sourceRef="Gateway_1axuzad" targetRef="Event_16czv9z" />
+    <bpmn:intermediateThrowEvent id="Event_16czv9z" name="To asteroid field">
+      <bpmn:incoming>Flow_19h7ghj</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_1pcjbbd" name="to_asteroid_field" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_0tqu4me" sourceRef="Event_0hs808n" targetRef="Activity_1lqilcv" />
+    <bpmn:intermediateCatchEvent id="Event_0hs808n" name="To asteroid field">
+      <bpmn:outgoing>Flow_0tqu4me</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_003zmcj" name="to_asteroid_field" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:subProcess id="Activity_0r4nwnl" name="All mining drones extract resources">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=null" target="ship_cargo" />
+          <zeebe:input source="=null" target="cargo_after_transfer" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1k97iv1</bpmn:incoming>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=mining_drones" inputElement="ship" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:startEvent id="Event_1i4irnm">
+        <bpmn:outgoing>Flow_1v1vi94</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:callActivity id="Activity_147u3d3" name="Extract resources">
+        <bpmn:extensionElements>
+          <zeebe:calledElement processId="space-traders-extract-resources" propagateAllChildVariables="false" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=ship" target="current_ship" />
+            <zeebe:output source="=ship_cargo" target="ship_cargo" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1v1vi94</bpmn:incoming>
+        <bpmn:incoming>Flow_0nmrvcq</bpmn:incoming>
+        <bpmn:outgoing>Flow_0nkryq4</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:sequenceFlow id="Flow_1v1vi94" sourceRef="Event_1i4irnm" targetRef="Activity_147u3d3" />
+      <bpmn:sequenceFlow id="Flow_0nkryq4" sourceRef="Activity_147u3d3" targetRef="Gateway_0iss4p5" />
+      <bpmn:serviceTask id="Activity_1rh6jyr" name="Transfer cargo" zeebe:modelerTemplate="com.camunda.SpaceTradersApi" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/png;base64,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">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="10" />
+          <zeebe:ioMapping>
+            <zeebe:input source="placeholder" target="objects" />
+            <zeebe:input source="=ship" target="objects.transferCargo_shipSymbol" />
+            <zeebe:input source="=cargo_good.symbol" target="objects.transferCargo_transferCargoRequest.tradeSymbol" />
+            <zeebe:input source="=cargo_good.units" target="objects.transferCargo_transferCargoRequest.units" />
+            <zeebe:input source="=command_ship" target="objects.transferCargo_transferCargoRequest.shipSymbol" />
+            <zeebe:input source="bearer" target="authentication.type" />
+            <zeebe:input source="=token" target="authentication.token" />
+            <zeebe:input source="post" target="method" />
+            <zeebe:input source="=&#34;https://api.spacetraders.io/v2/my/ships/&#34; + string(objects.transferCargo_shipSymbol) + &#34;/transfer&#34;" target="url" />
+            <zeebe:input source="={&#10;}" target="queryParameters" />
+            <zeebe:input source="= objects.transferCargo_transferCargoRequest" target="body" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="category" value="fleet" />
+            <zeebe:header key="operation" value="transferCargo" />
+            <zeebe:header key="resultExpression" value="={&#10; &#34;cargo_after_transfer&#34;: response.body.data.cargo&#10;}" />
+            <zeebe:header key="errorExpression" value="=if error.code = &#34;400&#34; &#10;then {&#10;  error_code: extract(error.message, &#34;\d{4}&#34;)[1],&#10;  error_codes: &#10;  {&#10;    &#34;4000&#34;:&#34;cooldownConflictError&#34;,&#10;    &#34;4001&#34;:&#34;waypointNoAccessError&#34;,&#10;    &#34;4100&#34;:&#34;tokenEmptyError&#34;,&#10;    &#34;4101&#34;:&#34;tokenMissingSubjectError&#34;,&#10;    &#34;4102&#34;:&#34;tokenInvalidSubjectError&#34;,&#10;    &#34;4103&#34;:&#34;missingTokenRequestError&#34;,&#10;    &#34;4104&#34;:&#34;invalidTokenRequestError&#34;,&#10;    &#34;4105&#34;:&#34;invalidTokenSubjectError&#34;,&#10;    &#34;4106&#34;:&#34;accountNotExistsError&#34;,&#10;    &#34;4107&#34;:&#34;agentNotExistsError&#34;,&#10;    &#34;4108&#34;:&#34;accountHasNoAgentError&#34;,&#10;    &#34;4109&#34;:&#34;registerAgentExistsError&#34;,&#10;    &#34;4110&#34;:&#34;registerAgentSymbolReservedError&#34;,&#10;    &#34;4111&#34;:&#34;registerAgentConflictSymbolError&#34;,&#10;    &#34;4200&#34;:&#34;navigateInTransitError&#34;,&#10;    &#34;4201&#34;:&#34;navigateInvalidDestinationError&#34;,&#10;    &#34;4202&#34;:&#34;navigateOutsideSystemError&#34;,&#10;    &#34;4203&#34;:&#34;navigateInsufficientFuelError&#34;,&#10;    &#34;4204&#34;:&#34;navigateSameDestinationError&#34;,&#10;    &#34;4205&#34;:&#34;shipExtractInvalidWaypointError&#34;,&#10;    &#34;4206&#34;:&#34;shipExtractPermissionError&#34;,&#10;    &#34;4207&#34;:&#34;shipJumpNoSystemError&#34;,&#10;    &#34;4208&#34;:&#34;shipJumpSameSystemError&#34;,&#10;    &#34;4210&#34;:&#34;shipJumpMissingModuleError&#34;,&#10;    &#34;4211&#34;:&#34;shipJumpNoValidWaypointError&#34;,&#10;    &#34;4212&#34;:&#34;shipJumpMissingAntimatterError&#34;,&#10;    &#34;4214&#34;:&#34;shipInTransitError&#34;,&#10;    &#34;4215&#34;:&#34;shipMissingSensorArraysError&#34;,&#10;    &#34;4216&#34;:&#34;purchaseShipCreditsError&#34;,&#10;    &#34;4217&#34;:&#34;shipCargoExceedsLimitError&#34;,&#10;    &#34;4218&#34;:&#34;shipCargoMissingError&#34;,&#10;    &#34;4219&#34;:&#34;shipCargoUnitCountError&#34;,&#10;    &#34;4220&#34;:&#34;shipSurveyVerificationError&#34;,&#10;    &#34;4221&#34;:&#34;shipSurveyExpirationError&#34;,&#10;    &#34;4222&#34;:&#34;shipSurveyWaypointTypeError&#34;,&#10;    &#34;4223&#34;:&#34;shipSurveyOrbitError&#34;,&#10;    &#34;4224&#34;:&#34;shipSurveyExhaustedError&#34;,&#10;    &#34;4225&#34;:&#34;shipRefuelDockedError&#34;,&#10;    &#34;4226&#34;:&#34;shipRefuelInvalidWaypointError&#34;,&#10;    &#34;4227&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4228&#34;:&#34;shipCargoFullError&#34;,&#10;    &#34;4229&#34;:&#34;shipJumpFromGateToGateError&#34;,&#10;    &#34;4230&#34;:&#34;waypointChartedError&#34;,&#10;    &#34;4231&#34;:&#34;shipTransferShipNotFound&#34;,&#10;    &#34;4232&#34;:&#34;shipTransferAgentConflict&#34;,&#10;    &#34;4233&#34;:&#34;shipTransferSameShipConflict&#34;,&#10;    &#34;4234&#34;:&#34;shipTransferLocationConflict&#34;,&#10;    &#34;4235&#34;:&#34;warpInsideSystemError&#34;,&#10;    &#34;4236&#34;:&#34;shipNotInOrbitError&#34;,&#10;    &#34;4237&#34;:&#34;shipInvalidRefineryGoodError&#34;,&#10;    &#34;4238&#34;:&#34;shipInvalidRefineryTypeError&#34;,&#10;    &#34;4239&#34;:&#34;shipMissingRefineryError&#34;,&#10;    &#34;4240&#34;:&#34;shipMissingSurveyorError&#34;,&#10;    &#34;4241&#34;:&#34;shipMissingWarpDriveError&#34;,&#10;    &#34;4242&#34;:&#34;shipMissingMineralProcessorError&#34;,&#10;    &#34;4243&#34;:&#34;shipMissingMiningLasersError&#34;,&#10;    &#34;4244&#34;:&#34;shipNotDockedError&#34;,&#10;    &#34;4245&#34;:&#34;purchaseShipNotPresentError&#34;,&#10;    &#34;4246&#34;:&#34;shipMountNoShipyardError&#34;,&#10;    &#34;4247&#34;:&#34;shipMissingMountError&#34;,&#10;    &#34;4248&#34;:&#34;shipMountInsufficientCreditsError&#34;,&#10;    &#34;4249&#34;:&#34;shipMissingPowerError&#34;,&#10;    &#34;4250&#34;:&#34;shipMissingSlotsError&#34;,&#10;    &#34;4251&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4252&#34;:&#34;shipMissingCrewError&#34;,&#10;    &#34;4253&#34;:&#34;shipExtractDestabilizedError&#34;,&#10;    &#34;4254&#34;:&#34;shipJumpInvalidOriginError&#34;,&#10;    &#34;4255&#34;:&#34;shipJumpInvalidWaypointError&#34;,&#10;    &#34;4256&#34;:&#34;shipJumpOriginUnderConstructionError&#34;,&#10;    &#34;4257&#34;:&#34;shipMissingGasProcessorError&#34;,&#10;    &#34;4258&#34;:&#34;shipMissingGasSiphonsError&#34;,&#10;    &#34;4259&#34;:&#34;shipSiphonInvalidWaypointError&#34;,&#10;    &#34;4260&#34;:&#34;shipSiphonPermissionError&#34;,&#10;    &#34;4261&#34;:&#34;waypointNoYieldError&#34;,&#10;    &#34;4262&#34;:&#34;shipJumpDestinationUnderConstructionError&#34;,&#10;    &#34;4500&#34;:&#34;acceptContractNotAuthorizedError&#34;,&#10;    &#34;4501&#34;:&#34;acceptContractConflictError&#34;,&#10;    &#34;4502&#34;:&#34;fulfillContractDeliveryError&#34;,&#10;    &#34;4503&#34;:&#34;contractDeadlineError&#34;,&#10;    &#34;4504&#34;:&#34;contractFulfilledError&#34;,&#10;    &#34;4505&#34;:&#34;contractNotAcceptedError&#34;,&#10;    &#34;4506&#34;:&#34;contractNotAuthorizedError&#34;,&#10;    &#34;4508&#34;:&#34;shipDeliverTermsError&#34;,&#10;    &#34;4509&#34;:&#34;shipDeliverFulfilledError&#34;,&#10;    &#34;4510&#34;:&#34;shipDeliverInvalidLocationError&#34;,&#10;    &#34;4511&#34;:&#34;existingContractError&#34;,&#10;    &#34;4600&#34;:&#34;marketTradeInsufficientCreditsError&#34;,&#10;    &#34;4601&#34;:&#34;marketTradeNoPurchaseError&#34;,&#10;    &#34;4602&#34;:&#34;marketTradeNotSoldError&#34;,&#10;    &#34;4603&#34;:&#34;marketNotFoundError&#34;,&#10;    &#34;4604&#34;:&#34;marketTradeUnitLimitError&#34;,&#10;    &#34;4700&#34;:&#34;waypointNoFactionError&#34;,&#10;    &#34;4800&#34;:&#34;constructionMaterialNotRequired&#34;,&#10;    &#34;4801&#34;:&#34;constructionMaterialFulfilled&#34;,&#10;    &#34;4802&#34;:&#34;shipConstructionInvalidLocationError&#34;&#10;  },&#10;  bpmn_error_code: get or else(get value(error_codes, error_code), error_code),&#10;  bpmn_error_message: substring(extract(error.message, &#34;\&#34;message\&#34;:\&#34;(\w|\d|\s|\.|\-)+&#34;)[1], 12),&#10;  bpmnError: bpmnError(bpmn_error_code, bpmn_error_message)&#10;}.bpmnError&#10;else null" />
+            <zeebe:header key="retryBackoff" value="PT1S" />
+          </zeebe:taskHeaders>
+          <zeebe:properties>
+            <zeebe:property name="custom_error_handling" value="by_error_name" />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0ek7wqq</bpmn:incoming>
+        <bpmn:outgoing>Flow_0e4kqx3</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+          <bpmn:extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=ship_cargo.inventory" inputElement="cargo_good" />
+          </bpmn:extensionElements>
+        </bpmn:multiInstanceLoopCharacteristics>
+      </bpmn:serviceTask>
+      <bpmn:boundaryEvent id="Event_03zshuu" name="Ship not at location" attachedToRef="Activity_1rh6jyr">
+        <bpmn:outgoing>Flow_1350v96</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_06oyl1t" errorRef="Error_1tvor7l" />
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Flow_1350v96" sourceRef="Event_03zshuu" targetRef="Event_070m9me" />
+      <bpmn:exclusiveGateway id="Gateway_0iss4p5">
+        <bpmn:incoming>Flow_0nkryq4</bpmn:incoming>
+        <bpmn:incoming>Flow_0dxxpaz</bpmn:incoming>
+        <bpmn:outgoing>Flow_0ek7wqq</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_0ek7wqq" sourceRef="Gateway_0iss4p5" targetRef="Activity_1rh6jyr" />
+      <bpmn:intermediateCatchEvent id="Event_070m9me" name="1 minute">
+        <bpmn:incoming>Flow_1350v96</bpmn:incoming>
+        <bpmn:outgoing>Flow_0dxxpaz</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1netgdr">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:sequenceFlow id="Flow_0dxxpaz" sourceRef="Event_070m9me" targetRef="Gateway_0iss4p5" />
+      <bpmn:sequenceFlow id="Flow_0nmrvcq" sourceRef="Event_18uxmtf" targetRef="Activity_147u3d3" />
+      <bpmn:intermediateCatchEvent id="Event_18uxmtf" name="To extract resources">
+        <bpmn:outgoing>Flow_0nmrvcq</bpmn:outgoing>
+        <bpmn:linkEventDefinition id="LinkEventDefinition_0ox9mr0" name="to_extract_resources_mining_drone" />
+      </bpmn:intermediateCatchEvent>
+      <bpmn:sequenceFlow id="Flow_0e4kqx3" sourceRef="Activity_1rh6jyr" targetRef="Gateway_17yamp4" />
+      <bpmn:intermediateThrowEvent id="Event_1w76m6z" name="To extract resources">
+        <bpmn:incoming>Flow_1v0x9wv</bpmn:incoming>
+        <bpmn:linkEventDefinition id="LinkEventDefinition_0fsgf75" name="to_extract_resources_mining_drone" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:boundaryEvent id="Event_0y3lme9" name="Cargo capacity exceeded" attachedToRef="Activity_1rh6jyr">
+        <bpmn:outgoing>Flow_06s2mme</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_0cuwv5p" errorRef="Error_1nkh7pw" />
+      </bpmn:boundaryEvent>
+      <bpmn:exclusiveGateway id="Gateway_17yamp4">
+        <bpmn:incoming>Flow_0e4kqx3</bpmn:incoming>
+        <bpmn:incoming>Flow_06s2mme</bpmn:incoming>
+        <bpmn:outgoing>Flow_1v0x9wv</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_1v0x9wv" sourceRef="Gateway_17yamp4" targetRef="Event_1w76m6z" />
+      <bpmn:sequenceFlow id="Flow_06s2mme" sourceRef="Event_0y3lme9" targetRef="Gateway_17yamp4" />
+    </bpmn:subProcess>
+    <bpmn:parallelGateway id="Gateway_0leuhd4">
+      <bpmn:incoming>Flow_08349j0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jxx8mk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1wgec1t</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:callActivity id="Activity_0j6x3s9" name="Extract resources">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-extract-resources" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=command_ship" target="current_ship" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0kcsw01</bpmn:incoming>
+      <bpmn:outgoing>Flow_0336xq0</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_0sigf2m" name="Sell goods">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-sell-goods" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=current_system" target="current_system" />
+          <zeebe:input source="=contract_delivery_waypoint" target="current_waypoint" />
+          <zeebe:input source="=command_ship" target="current_ship" />
+          <zeebe:input source="=contract.terms.deliver.tradeSymbol" target="excluded_goods" />
+          <zeebe:output source="=cargo" target="cargo" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ft70si</bpmn:incoming>
+      <bpmn:outgoing>Flow_1yng76a</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0336xq0" sourceRef="Activity_0j6x3s9" targetRef="Activity_0i6l9ga" />
+    <bpmn:sequenceFlow id="Flow_0jxx8mk" sourceRef="Gateway_0leuhd4" targetRef="Activity_1lqilcv" />
+    <bpmn:callActivity id="Activity_15vxu1m" name="Refuel ship">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-refuel-ship" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=command_ship" target="current_ship" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0t2ka4o</bpmn:incoming>
+      <bpmn:outgoing>Flow_0kcsw01</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_0swt9xh" name="Navigate to the asteroid field">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-navigate-ship" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=ship" target="current_ship" />
+          <zeebe:input source="=asteroid_field" target="target" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1wgec1t</bpmn:incoming>
+      <bpmn:outgoing>Flow_1k97iv1</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=mining_drones" inputElement="ship" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_08349j0" sourceRef="Activity_1ydhxyt" targetRef="Gateway_0leuhd4" />
+    <bpmn:sequenceFlow id="Flow_1wgec1t" sourceRef="Gateway_0leuhd4" targetRef="Activity_0swt9xh" />
+    <bpmn:sequenceFlow id="Flow_1k97iv1" sourceRef="Activity_0swt9xh" targetRef="Activity_0r4nwnl" />
+    <bpmn:sequenceFlow id="Flow_0t2ka4o" sourceRef="Activity_1lqilcv" targetRef="Activity_15vxu1m" />
+    <bpmn:serviceTask id="Activity_114rsg9" name="Get ships" zeebe:modelerTemplate="com.camunda.SpaceTradersApi" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFsElEQVRYR+2WW2wUVRzGf2d2t9vthd6AllZKAVvEUqAFBOItQYKQNEATAlFDgiYC8YFo8IE3UUNIfFAfUKzQGhKUYNHAgwgaCWnjBVEEAq0SoVxaKNKLpbftbnfGnHNmdme3LRaffGCSzVz2zPm+833f/39GtNYutoRhIIT9MwyQ184z+zzis+h7AsuywDKxTBMr4ayej/JM/A8ILHIp4IGElTtKIATC8Gil1BihlZJn5M+KqaBWK++1IlgR9V+iOpgmorV2kRWb1IgRSLBBg2nw6LUiIcHtQ4IouW07XLJLsDgbLJN4AsIF7sqEVkQMA1eKRMG1AupQJDSRuEyMkhHRWiMt0ACJQXOvOia5HOeASwViAmgOjhUOiZgVipSjhB1M0VqzUGUgHswBcUvukIydJZzGFxLW8UGJIcHCYZPm9gjtQ8lM9AeZmimzoK1QSskMtNQ8pjMwgr/D/XbCp4OnHYiXQCrd1h3hxOBUmjJmQUERmBGevXyYxanNdhBjFomWvZKATHi8ClpmTcy5vnPX5PebITrumphARoqHKRN9TMv14zWU+Hx7K4P6ySvw5uVHvSkKCBY0vM+M7N5h/UK07F2gFIgCRonEpG5sGWJ/Qy8XroekcnGHvM1IMXh9dQ5NgRL+LK/CSPKR13OZzqSJhPzpLLHuUHqxmoyAtsbdtETLnvmWU8+JklsIPvt+gLof+zFt4NTUAOHwEIbHIDgw6ASfJyvLCVWuR3g8eAd7WXnqLb4Mzmda1TrmXfyKGZEzMe9dVSJufDxPK2BXgluN/Q1B6k4NxC/ZvvN6PZDkJ2d6Ib2d3Uzf9CKBvFwVrpk/13IxbQ4ir4gNU3x46ncxaVwkoUR1DsSN6gpLd7l4v39pjrDjcF9Ucp/Pi0euOhhSFCqeWUjV5rX0evyc+eEc3cWl0b4Q6e/Hn5rCC/kG3Uf3UpraYsseX5pycnG9ulyH0OkDQhA2BVv29dHWnWC4vfoJZTNZsWEVl4eS6Gr/G++4dPw52YR7+0jPzqAwxWDpeINbxw8xU5zDUCU6Un+QBD6aqxVw+rowaPgjwnvHtL+jHTJIknjRc2vImjub5k8/Z+2W51lZkoUvFOLYgYOUehuZkG53R90cXErodi2u7Z5t94HY5mIiONEYoSDLQ362Qd1PIY6eC+uWI+yt12YWyMkid0oB216pJD83i8MNTRw59B0dV26weWmA5XOSFHC0RdtE9BZtIa59WBZVwFHC3Wol4JAJG6r76A8JMjPT6OrqUfA56YLMVIOucBobN63im0gmCyqKOf5uDVdPnWXTkmSWz/HpfcJZfdyuaSGufjBLZWA0cPm8Jwg7jgxyqU22H1TTqSxPoiTfQ+3JIO09Wtry7dtYV1HAmy9tJ9jRyWvL/Tz1iFfLPiIJSWBXqa2AQ0K32SFTcOkvmJxlqB6QHjDY/EmQzj6LVfN8LCvzcu6ayZ6Tg9FKeXrrRqzr16ivO66I7lzrZ8Yk2SJt70cgoQk4LV0GUV3HPjRu98DEdE3u6/MRMlMEj5d4GQjB1gNBbjuVYlnkL6zg1umzasWyTex72U+ydEAB61YdC6KdgSgBJ+5xW60GlgpeatOej0/TW3Ft/RBHz0eGFUlW9ji6Ou9S9pDgjdWO/5qEbsHxJRlTwD2VvctFP7dURqC7H6VAOAKNNy1qG0zl/+CQftldIa8u8/BEsati3MC2IuqdYQqMQEQF1PHJtQUHw/o76J2jES60wsPFk2m+0kphlsnONQYeNdb+UogGMV60exNwje3qh5vdgtJ8uNOjSzM/Uw840QS7T+ooBXzwdhUUZjsva/9HO8ZMQE7QO6j2LFKS4PZdSE+GFD988avg4Gl9v3WZxaOTRgdM/Oe+CChBrdiHsCxPSehqBxz+DdYvgpy0sYP/ewbGOJdU2P1hNsbXdKruGcL7mek/jn1A4IEC/wB+OnlF9mGuwgAAAABJRU5ErkJggg==">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="10" />
+        <zeebe:ioMapping>
+          <zeebe:input source="placeholder" target="objects" />
+          <zeebe:input source="1" target="objects.getMyShips_page" />
+          <zeebe:input source="10" target="objects.getMyShips_limit" />
+          <zeebe:input source="bearer" target="authentication.type" />
+          <zeebe:input source="=token" target="authentication.token" />
+          <zeebe:input source="get" target="method" />
+          <zeebe:input source="=&#34;https://api.spacetraders.io/v2/my/ships&#34;" target="url" />
+          <zeebe:input source="={&#10; &#34;page&#34;: objects.getMyShips_page,&#10; &#34;limit&#34;: objects.getMyShips_limit&#10;}" target="queryParameters" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="category" value="fleet" />
+          <zeebe:header key="operation" value="getMyShips" />
+          <zeebe:header key="resultExpression" value="={&#10;  &#34;ships&#34;: response.body.data,&#10;  &#34;meta&#34;: response.body.meta,&#10;  &#34;command_ship&#34;: ships[registration.role = &#34;COMMAND&#34;][1].symbol&#10;}" />
+          <zeebe:header key="errorExpression" value="=if error.code = &#34;400&#34; &#10;then {&#10;  error_code: extract(error.message, &#34;\d{4}&#34;)[1],&#10;  error_codes: &#10;  {&#10;    &#34;4000&#34;:&#34;cooldownConflictError&#34;,&#10;    &#34;4001&#34;:&#34;waypointNoAccessError&#34;,&#10;    &#34;4100&#34;:&#34;tokenEmptyError&#34;,&#10;    &#34;4101&#34;:&#34;tokenMissingSubjectError&#34;,&#10;    &#34;4102&#34;:&#34;tokenInvalidSubjectError&#34;,&#10;    &#34;4103&#34;:&#34;missingTokenRequestError&#34;,&#10;    &#34;4104&#34;:&#34;invalidTokenRequestError&#34;,&#10;    &#34;4105&#34;:&#34;invalidTokenSubjectError&#34;,&#10;    &#34;4106&#34;:&#34;accountNotExistsError&#34;,&#10;    &#34;4107&#34;:&#34;agentNotExistsError&#34;,&#10;    &#34;4108&#34;:&#34;accountHasNoAgentError&#34;,&#10;    &#34;4109&#34;:&#34;registerAgentExistsError&#34;,&#10;    &#34;4110&#34;:&#34;registerAgentSymbolReservedError&#34;,&#10;    &#34;4111&#34;:&#34;registerAgentConflictSymbolError&#34;,&#10;    &#34;4200&#34;:&#34;navigateInTransitError&#34;,&#10;    &#34;4201&#34;:&#34;navigateInvalidDestinationError&#34;,&#10;    &#34;4202&#34;:&#34;navigateOutsideSystemError&#34;,&#10;    &#34;4203&#34;:&#34;navigateInsufficientFuelError&#34;,&#10;    &#34;4204&#34;:&#34;navigateSameDestinationError&#34;,&#10;    &#34;4205&#34;:&#34;shipExtractInvalidWaypointError&#34;,&#10;    &#34;4206&#34;:&#34;shipExtractPermissionError&#34;,&#10;    &#34;4207&#34;:&#34;shipJumpNoSystemError&#34;,&#10;    &#34;4208&#34;:&#34;shipJumpSameSystemError&#34;,&#10;    &#34;4210&#34;:&#34;shipJumpMissingModuleError&#34;,&#10;    &#34;4211&#34;:&#34;shipJumpNoValidWaypointError&#34;,&#10;    &#34;4212&#34;:&#34;shipJumpMissingAntimatterError&#34;,&#10;    &#34;4214&#34;:&#34;shipInTransitError&#34;,&#10;    &#34;4215&#34;:&#34;shipMissingSensorArraysError&#34;,&#10;    &#34;4216&#34;:&#34;purchaseShipCreditsError&#34;,&#10;    &#34;4217&#34;:&#34;shipCargoExceedsLimitError&#34;,&#10;    &#34;4218&#34;:&#34;shipCargoMissingError&#34;,&#10;    &#34;4219&#34;:&#34;shipCargoUnitCountError&#34;,&#10;    &#34;4220&#34;:&#34;shipSurveyVerificationError&#34;,&#10;    &#34;4221&#34;:&#34;shipSurveyExpirationError&#34;,&#10;    &#34;4222&#34;:&#34;shipSurveyWaypointTypeError&#34;,&#10;    &#34;4223&#34;:&#34;shipSurveyOrbitError&#34;,&#10;    &#34;4224&#34;:&#34;shipSurveyExhaustedError&#34;,&#10;    &#34;4225&#34;:&#34;shipRefuelDockedError&#34;,&#10;    &#34;4226&#34;:&#34;shipRefuelInvalidWaypointError&#34;,&#10;    &#34;4227&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4228&#34;:&#34;shipCargoFullError&#34;,&#10;    &#34;4229&#34;:&#34;shipJumpFromGateToGateError&#34;,&#10;    &#34;4230&#34;:&#34;waypointChartedError&#34;,&#10;    &#34;4231&#34;:&#34;shipTransferShipNotFound&#34;,&#10;    &#34;4232&#34;:&#34;shipTransferAgentConflict&#34;,&#10;    &#34;4233&#34;:&#34;shipTransferSameShipConflict&#34;,&#10;    &#34;4234&#34;:&#34;shipTransferLocationConflict&#34;,&#10;    &#34;4235&#34;:&#34;warpInsideSystemError&#34;,&#10;    &#34;4236&#34;:&#34;shipNotInOrbitError&#34;,&#10;    &#34;4237&#34;:&#34;shipInvalidRefineryGoodError&#34;,&#10;    &#34;4238&#34;:&#34;shipInvalidRefineryTypeError&#34;,&#10;    &#34;4239&#34;:&#34;shipMissingRefineryError&#34;,&#10;    &#34;4240&#34;:&#34;shipMissingSurveyorError&#34;,&#10;    &#34;4241&#34;:&#34;shipMissingWarpDriveError&#34;,&#10;    &#34;4242&#34;:&#34;shipMissingMineralProcessorError&#34;,&#10;    &#34;4243&#34;:&#34;shipMissingMiningLasersError&#34;,&#10;    &#34;4244&#34;:&#34;shipNotDockedError&#34;,&#10;    &#34;4245&#34;:&#34;purchaseShipNotPresentError&#34;,&#10;    &#34;4246&#34;:&#34;shipMountNoShipyardError&#34;,&#10;    &#34;4247&#34;:&#34;shipMissingMountError&#34;,&#10;    &#34;4248&#34;:&#34;shipMountInsufficientCreditsError&#34;,&#10;    &#34;4249&#34;:&#34;shipMissingPowerError&#34;,&#10;    &#34;4250&#34;:&#34;shipMissingSlotsError&#34;,&#10;    &#34;4251&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4252&#34;:&#34;shipMissingCrewError&#34;,&#10;    &#34;4253&#34;:&#34;shipExtractDestabilizedError&#34;,&#10;    &#34;4254&#34;:&#34;shipJumpInvalidOriginError&#34;,&#10;    &#34;4255&#34;:&#34;shipJumpInvalidWaypointError&#34;,&#10;    &#34;4256&#34;:&#34;shipJumpOriginUnderConstructionError&#34;,&#10;    &#34;4257&#34;:&#34;shipMissingGasProcessorError&#34;,&#10;    &#34;4258&#34;:&#34;shipMissingGasSiphonsError&#34;,&#10;    &#34;4259&#34;:&#34;shipSiphonInvalidWaypointError&#34;,&#10;    &#34;4260&#34;:&#34;shipSiphonPermissionError&#34;,&#10;    &#34;4261&#34;:&#34;waypointNoYieldError&#34;,&#10;    &#34;4262&#34;:&#34;shipJumpDestinationUnderConstructionError&#34;,&#10;    &#34;4500&#34;:&#34;acceptContractNotAuthorizedError&#34;,&#10;    &#34;4501&#34;:&#34;acceptContractConflictError&#34;,&#10;    &#34;4502&#34;:&#34;fulfillContractDeliveryError&#34;,&#10;    &#34;4503&#34;:&#34;contractDeadlineError&#34;,&#10;    &#34;4504&#34;:&#34;contractFulfilledError&#34;,&#10;    &#34;4505&#34;:&#34;contractNotAcceptedError&#34;,&#10;    &#34;4506&#34;:&#34;contractNotAuthorizedError&#34;,&#10;    &#34;4508&#34;:&#34;shipDeliverTermsError&#34;,&#10;    &#34;4509&#34;:&#34;shipDeliverFulfilledError&#34;,&#10;    &#34;4510&#34;:&#34;shipDeliverInvalidLocationError&#34;,&#10;    &#34;4511&#34;:&#34;existingContractError&#34;,&#10;    &#34;4600&#34;:&#34;marketTradeInsufficientCreditsError&#34;,&#10;    &#34;4601&#34;:&#34;marketTradeNoPurchaseError&#34;,&#10;    &#34;4602&#34;:&#34;marketTradeNotSoldError&#34;,&#10;    &#34;4603&#34;:&#34;marketNotFoundError&#34;,&#10;    &#34;4604&#34;:&#34;marketTradeUnitLimitError&#34;,&#10;    &#34;4700&#34;:&#34;waypointNoFactionError&#34;,&#10;    &#34;4800&#34;:&#34;constructionMaterialNotRequired&#34;,&#10;    &#34;4801&#34;:&#34;constructionMaterialFulfilled&#34;,&#10;    &#34;4802&#34;:&#34;shipConstructionInvalidLocationError&#34;&#10;  },&#10;  bpmn_error_code: get or else(get value(error_codes, error_code), error_code),&#10;  bpmn_error_message: substring(extract(error.message, &#34;\&#34;message\&#34;:\&#34;(\w|\d|\s|\.|\-)+&#34;)[1], 12),&#10;  bpmnError: bpmnError(bpmn_error_code, bpmn_error_message)&#10;}.bpmnError&#10;else null" />
+          <zeebe:header key="retryBackoff" value="PT1S" />
+        </zeebe:taskHeaders>
+        <zeebe:properties>
+          <zeebe:property name="custom_error_handling" value="by_error_name" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_06aljds</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qz8h1d</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1ydhxyt" name="Find an asteroid field" zeebe:modelerTemplate="com.camunda.SpaceTradersApi" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/png;base64,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">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="10" />
+        <zeebe:ioMapping>
+          <zeebe:input source="placeholder" target="objects" />
+          <zeebe:input source="=current_system" target="objects.getSystemWaypoints_systemSymbol" />
+          <zeebe:input source="1" target="objects.getSystemWaypoints_page" />
+          <zeebe:input source="10" target="objects.getSystemWaypoints_limit" />
+          <zeebe:input source="=null" target="objects.getSystemWaypoints_traits" />
+          <zeebe:input source="ENGINEERED_ASTEROID" target="objects.getSystemWaypoints_type" />
+          <zeebe:input source="bearer" target="authentication.type" />
+          <zeebe:input source="= token" target="authentication.token" />
+          <zeebe:input source="get" target="method" />
+          <zeebe:input source="=&#34;https://api.spacetraders.io/v2/systems/&#34; + string(objects.getSystemWaypoints_systemSymbol) + &#34;/waypoints&#34;" target="url" />
+          <zeebe:input source="={&#10; &#34;page&#34;: objects.getSystemWaypoints_page,&#10; &#34;limit&#34;: objects.getSystemWaypoints_limit,&#10; &#34;traits&#34;: objects.getSystemWaypoints_traits,&#10; &#34;type&#34;: objects.getSystemWaypoints_type&#10;}" target="queryParameters" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="category" value="systems" />
+          <zeebe:header key="operation" value="getSystemWaypoints" />
+          <zeebe:header key="resultExpression" value="={&#10;  &#34;waypoints&#34;: response.body.data,&#10;  &#34;meta&#34;: response.body.meta,&#10;  &#34;asteroid_field&#34;: waypoints[1].symbol&#10;}" />
+          <zeebe:header key="errorExpression" value="=if error.code = &#34;400&#34; &#10;then {&#10;  error_code: extract(error.message, &#34;\d{4}&#34;)[1],&#10;  error_codes: &#10;  {&#10;    &#34;4000&#34;:&#34;cooldownConflictError&#34;,&#10;    &#34;4001&#34;:&#34;waypointNoAccessError&#34;,&#10;    &#34;4100&#34;:&#34;tokenEmptyError&#34;,&#10;    &#34;4101&#34;:&#34;tokenMissingSubjectError&#34;,&#10;    &#34;4102&#34;:&#34;tokenInvalidSubjectError&#34;,&#10;    &#34;4103&#34;:&#34;missingTokenRequestError&#34;,&#10;    &#34;4104&#34;:&#34;invalidTokenRequestError&#34;,&#10;    &#34;4105&#34;:&#34;invalidTokenSubjectError&#34;,&#10;    &#34;4106&#34;:&#34;accountNotExistsError&#34;,&#10;    &#34;4107&#34;:&#34;agentNotExistsError&#34;,&#10;    &#34;4108&#34;:&#34;accountHasNoAgentError&#34;,&#10;    &#34;4109&#34;:&#34;registerAgentExistsError&#34;,&#10;    &#34;4110&#34;:&#34;registerAgentSymbolReservedError&#34;,&#10;    &#34;4111&#34;:&#34;registerAgentConflictSymbolError&#34;,&#10;    &#34;4200&#34;:&#34;navigateInTransitError&#34;,&#10;    &#34;4201&#34;:&#34;navigateInvalidDestinationError&#34;,&#10;    &#34;4202&#34;:&#34;navigateOutsideSystemError&#34;,&#10;    &#34;4203&#34;:&#34;navigateInsufficientFuelError&#34;,&#10;    &#34;4204&#34;:&#34;navigateSameDestinationError&#34;,&#10;    &#34;4205&#34;:&#34;shipExtractInvalidWaypointError&#34;,&#10;    &#34;4206&#34;:&#34;shipExtractPermissionError&#34;,&#10;    &#34;4207&#34;:&#34;shipJumpNoSystemError&#34;,&#10;    &#34;4208&#34;:&#34;shipJumpSameSystemError&#34;,&#10;    &#34;4210&#34;:&#34;shipJumpMissingModuleError&#34;,&#10;    &#34;4211&#34;:&#34;shipJumpNoValidWaypointError&#34;,&#10;    &#34;4212&#34;:&#34;shipJumpMissingAntimatterError&#34;,&#10;    &#34;4214&#34;:&#34;shipInTransitError&#34;,&#10;    &#34;4215&#34;:&#34;shipMissingSensorArraysError&#34;,&#10;    &#34;4216&#34;:&#34;purchaseShipCreditsError&#34;,&#10;    &#34;4217&#34;:&#34;shipCargoExceedsLimitError&#34;,&#10;    &#34;4218&#34;:&#34;shipCargoMissingError&#34;,&#10;    &#34;4219&#34;:&#34;shipCargoUnitCountError&#34;,&#10;    &#34;4220&#34;:&#34;shipSurveyVerificationError&#34;,&#10;    &#34;4221&#34;:&#34;shipSurveyExpirationError&#34;,&#10;    &#34;4222&#34;:&#34;shipSurveyWaypointTypeError&#34;,&#10;    &#34;4223&#34;:&#34;shipSurveyOrbitError&#34;,&#10;    &#34;4224&#34;:&#34;shipSurveyExhaustedError&#34;,&#10;    &#34;4225&#34;:&#34;shipRefuelDockedError&#34;,&#10;    &#34;4226&#34;:&#34;shipRefuelInvalidWaypointError&#34;,&#10;    &#34;4227&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4228&#34;:&#34;shipCargoFullError&#34;,&#10;    &#34;4229&#34;:&#34;shipJumpFromGateToGateError&#34;,&#10;    &#34;4230&#34;:&#34;waypointChartedError&#34;,&#10;    &#34;4231&#34;:&#34;shipTransferShipNotFound&#34;,&#10;    &#34;4232&#34;:&#34;shipTransferAgentConflict&#34;,&#10;    &#34;4233&#34;:&#34;shipTransferSameShipConflict&#34;,&#10;    &#34;4234&#34;:&#34;shipTransferLocationConflict&#34;,&#10;    &#34;4235&#34;:&#34;warpInsideSystemError&#34;,&#10;    &#34;4236&#34;:&#34;shipNotInOrbitError&#34;,&#10;    &#34;4237&#34;:&#34;shipInvalidRefineryGoodError&#34;,&#10;    &#34;4238&#34;:&#34;shipInvalidRefineryTypeError&#34;,&#10;    &#34;4239&#34;:&#34;shipMissingRefineryError&#34;,&#10;    &#34;4240&#34;:&#34;shipMissingSurveyorError&#34;,&#10;    &#34;4241&#34;:&#34;shipMissingWarpDriveError&#34;,&#10;    &#34;4242&#34;:&#34;shipMissingMineralProcessorError&#34;,&#10;    &#34;4243&#34;:&#34;shipMissingMiningLasersError&#34;,&#10;    &#34;4244&#34;:&#34;shipNotDockedError&#34;,&#10;    &#34;4245&#34;:&#34;purchaseShipNotPresentError&#34;,&#10;    &#34;4246&#34;:&#34;shipMountNoShipyardError&#34;,&#10;    &#34;4247&#34;:&#34;shipMissingMountError&#34;,&#10;    &#34;4248&#34;:&#34;shipMountInsufficientCreditsError&#34;,&#10;    &#34;4249&#34;:&#34;shipMissingPowerError&#34;,&#10;    &#34;4250&#34;:&#34;shipMissingSlotsError&#34;,&#10;    &#34;4251&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4252&#34;:&#34;shipMissingCrewError&#34;,&#10;    &#34;4253&#34;:&#34;shipExtractDestabilizedError&#34;,&#10;    &#34;4254&#34;:&#34;shipJumpInvalidOriginError&#34;,&#10;    &#34;4255&#34;:&#34;shipJumpInvalidWaypointError&#34;,&#10;    &#34;4256&#34;:&#34;shipJumpOriginUnderConstructionError&#34;,&#10;    &#34;4257&#34;:&#34;shipMissingGasProcessorError&#34;,&#10;    &#34;4258&#34;:&#34;shipMissingGasSiphonsError&#34;,&#10;    &#34;4259&#34;:&#34;shipSiphonInvalidWaypointError&#34;,&#10;    &#34;4260&#34;:&#34;shipSiphonPermissionError&#34;,&#10;    &#34;4261&#34;:&#34;waypointNoYieldError&#34;,&#10;    &#34;4262&#34;:&#34;shipJumpDestinationUnderConstructionError&#34;,&#10;    &#34;4500&#34;:&#34;acceptContractNotAuthorizedError&#34;,&#10;    &#34;4501&#34;:&#34;acceptContractConflictError&#34;,&#10;    &#34;4502&#34;:&#34;fulfillContractDeliveryError&#34;,&#10;    &#34;4503&#34;:&#34;contractDeadlineError&#34;,&#10;    &#34;4504&#34;:&#34;contractFulfilledError&#34;,&#10;    &#34;4505&#34;:&#34;contractNotAcceptedError&#34;,&#10;    &#34;4506&#34;:&#34;contractNotAuthorizedError&#34;,&#10;    &#34;4508&#34;:&#34;shipDeliverTermsError&#34;,&#10;    &#34;4509&#34;:&#34;shipDeliverFulfilledError&#34;,&#10;    &#34;4510&#34;:&#34;shipDeliverInvalidLocationError&#34;,&#10;    &#34;4511&#34;:&#34;existingContractError&#34;,&#10;    &#34;4600&#34;:&#34;marketTradeInsufficientCreditsError&#34;,&#10;    &#34;4601&#34;:&#34;marketTradeNoPurchaseError&#34;,&#10;    &#34;4602&#34;:&#34;marketTradeNotSoldError&#34;,&#10;    &#34;4603&#34;:&#34;marketNotFoundError&#34;,&#10;    &#34;4604&#34;:&#34;marketTradeUnitLimitError&#34;,&#10;    &#34;4700&#34;:&#34;waypointNoFactionError&#34;,&#10;    &#34;4800&#34;:&#34;constructionMaterialNotRequired&#34;,&#10;    &#34;4801&#34;:&#34;constructionMaterialFulfilled&#34;,&#10;    &#34;4802&#34;:&#34;shipConstructionInvalidLocationError&#34;&#10;  },&#10;  bpmn_error_code: get or else(get value(error_codes, error_code), error_code),&#10;  bpmn_error_message: substring(extract(error.message, &#34;\&#34;message\&#34;:\&#34;(\w|\d|\s|\.|\-)+&#34;)[1], 12),&#10;  bpmnError: bpmnError(bpmn_error_code, bpmn_error_message)&#10;}.bpmnError&#10;else null" />
+          <zeebe:header key="retryBackoff" value="PT1S" />
+        </zeebe:taskHeaders>
+        <zeebe:properties>
+          <zeebe:property name="custom_error_handling" value="by_error_name" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0n3x562</bpmn:incoming>
+      <bpmn:outgoing>Flow_08349j0</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0kcsw01" sourceRef="Activity_15vxu1m" targetRef="Activity_0j6x3s9" />
+    <bpmn:callActivity id="Activity_0i6l9ga" name="Navigate to contract delivery point">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-navigate-ship" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=command_ship" target="current_ship" />
+          <zeebe:input source="=contract.terms.deliver[1].destinationSymbol" target="target" />
+          <zeebe:output source="=nav.waypointSymbol" target="contract_delivery_waypoint" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0336xq0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0935e1b</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0935e1b" sourceRef="Activity_0i6l9ga" targetRef="Activity_05qdjt4" />
+    <bpmn:callActivity id="Activity_05qdjt4" name="Refuel ship">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-refuel-ship" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=command_ship" target="current_ship" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0935e1b</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ft70si</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1ft70si" sourceRef="Activity_05qdjt4" targetRef="Activity_0sigf2m" />
+    <bpmn:sequenceFlow id="Flow_1yng76a" sourceRef="Activity_0sigf2m" targetRef="Activity_01feyxg" />
+    <bpmn:sequenceFlow id="Flow_0gyvae0" sourceRef="Activity_0iijzms" targetRef="Gateway_1axuzad" />
+    <bpmn:serviceTask id="Activity_0iijzms" name="Jettison goods" zeebe:modelerTemplate="com.camunda.SpaceTradersApi" zeebe:modelerTemplateVersion="4" zeebe:modelerTemplateIcon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAFsElEQVRYR+2WW2wUVRzGf2d2t9vthd6AllZKAVvEUqAFBOItQYKQNEATAlFDgiYC8YFo8IE3UUNIfFAfUKzQGhKUYNHAgwgaCWnjBVEEAq0SoVxaKNKLpbftbnfGnHNmdme3LRaffGCSzVz2zPm+833f/39GtNYutoRhIIT9MwyQ184z+zzis+h7AsuywDKxTBMr4ayej/JM/A8ILHIp4IGElTtKIATC8Gil1BihlZJn5M+KqaBWK++1IlgR9V+iOpgmorV2kRWb1IgRSLBBg2nw6LUiIcHtQ4IouW07XLJLsDgbLJN4AsIF7sqEVkQMA1eKRMG1AupQJDSRuEyMkhHRWiMt0ACJQXOvOia5HOeASwViAmgOjhUOiZgVipSjhB1M0VqzUGUgHswBcUvukIydJZzGFxLW8UGJIcHCYZPm9gjtQ8lM9AeZmimzoK1QSskMtNQ8pjMwgr/D/XbCp4OnHYiXQCrd1h3hxOBUmjJmQUERmBGevXyYxanNdhBjFomWvZKATHi8ClpmTcy5vnPX5PebITrumphARoqHKRN9TMv14zWU+Hx7K4P6ySvw5uVHvSkKCBY0vM+M7N5h/UK07F2gFIgCRonEpG5sGWJ/Qy8XroekcnGHvM1IMXh9dQ5NgRL+LK/CSPKR13OZzqSJhPzpLLHuUHqxmoyAtsbdtETLnvmWU8+JklsIPvt+gLof+zFt4NTUAOHwEIbHIDgw6ASfJyvLCVWuR3g8eAd7WXnqLb4Mzmda1TrmXfyKGZEzMe9dVSJufDxPK2BXgluN/Q1B6k4NxC/ZvvN6PZDkJ2d6Ib2d3Uzf9CKBvFwVrpk/13IxbQ4ir4gNU3x46ncxaVwkoUR1DsSN6gpLd7l4v39pjrDjcF9Ucp/Pi0euOhhSFCqeWUjV5rX0evyc+eEc3cWl0b4Q6e/Hn5rCC/kG3Uf3UpraYsseX5pycnG9ulyH0OkDQhA2BVv29dHWnWC4vfoJZTNZsWEVl4eS6Gr/G++4dPw52YR7+0jPzqAwxWDpeINbxw8xU5zDUCU6Un+QBD6aqxVw+rowaPgjwnvHtL+jHTJIknjRc2vImjub5k8/Z+2W51lZkoUvFOLYgYOUehuZkG53R90cXErodi2u7Z5t94HY5mIiONEYoSDLQ362Qd1PIY6eC+uWI+yt12YWyMkid0oB216pJD83i8MNTRw59B0dV26weWmA5XOSFHC0RdtE9BZtIa59WBZVwFHC3Wol4JAJG6r76A8JMjPT6OrqUfA56YLMVIOucBobN63im0gmCyqKOf5uDVdPnWXTkmSWz/HpfcJZfdyuaSGufjBLZWA0cPm8Jwg7jgxyqU22H1TTqSxPoiTfQ+3JIO09Wtry7dtYV1HAmy9tJ9jRyWvL/Tz1iFfLPiIJSWBXqa2AQ0K32SFTcOkvmJxlqB6QHjDY/EmQzj6LVfN8LCvzcu6ayZ6Tg9FKeXrrRqzr16ivO66I7lzrZ8Yk2SJt70cgoQk4LV0GUV3HPjRu98DEdE3u6/MRMlMEj5d4GQjB1gNBbjuVYlnkL6zg1umzasWyTex72U+ydEAB61YdC6KdgSgBJ+5xW60GlgpeatOej0/TW3Ft/RBHz0eGFUlW9ji6Ou9S9pDgjdWO/5qEbsHxJRlTwD2VvctFP7dURqC7H6VAOAKNNy1qG0zl/+CQftldIa8u8/BEsati3MC2IuqdYQqMQEQF1PHJtQUHw/o76J2jES60wsPFk2m+0kphlsnONQYeNdb+UogGMV60exNwje3qh5vdgtJ8uNOjSzM/Uw840QS7T+ooBXzwdhUUZjsva/9HO8ZMQE7QO6j2LFKS4PZdSE+GFD988avg4Gl9v3WZxaOTRgdM/Oe+CChBrdiHsCxPSehqBxz+DdYvgpy0sYP/ewbGOJdU2P1hNsbXdKruGcL7mek/jn1A4IEC/wB+OnlF9mGuwgAAAABJRU5ErkJggg==">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="10" />
+        <zeebe:ioMapping>
+          <zeebe:input source="placeholder" target="objects" />
+          <zeebe:input source="=command_ship" target="objects.jettison_shipSymbol" />
+          <zeebe:input source="=cargo_good.symbol" target="objects.jettison_jettisonRequest.symbol" />
+          <zeebe:input source="=cargo_good.units" target="objects.jettison_jettisonRequest.units" />
+          <zeebe:input source="bearer" target="authentication.type" />
+          <zeebe:input source="=token" target="authentication.token" />
+          <zeebe:input source="post" target="method" />
+          <zeebe:input source="=&#34;https://api.spacetraders.io/v2/my/ships/&#34; + string(objects.jettison_shipSymbol) + &#34;/jettison&#34;" target="url" />
+          <zeebe:input source="={&#10;}" target="queryParameters" />
+          <zeebe:input source="= objects.jettison_jettisonRequest" target="body" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="category" value="fleet" />
+          <zeebe:header key="operation" value="jettison" />
+          <zeebe:header key="resultExpression" value="={&#10; &#34;cargo_after_jettison&#34;: response.body.data.cargo&#10;}" />
+          <zeebe:header key="errorExpression" value="=if error.code = &#34;400&#34; &#10;then {&#10;  error_code: extract(error.message, &#34;\d{4}&#34;)[1],&#10;  error_codes: &#10;  {&#10;    &#34;4000&#34;:&#34;cooldownConflictError&#34;,&#10;    &#34;4001&#34;:&#34;waypointNoAccessError&#34;,&#10;    &#34;4100&#34;:&#34;tokenEmptyError&#34;,&#10;    &#34;4101&#34;:&#34;tokenMissingSubjectError&#34;,&#10;    &#34;4102&#34;:&#34;tokenInvalidSubjectError&#34;,&#10;    &#34;4103&#34;:&#34;missingTokenRequestError&#34;,&#10;    &#34;4104&#34;:&#34;invalidTokenRequestError&#34;,&#10;    &#34;4105&#34;:&#34;invalidTokenSubjectError&#34;,&#10;    &#34;4106&#34;:&#34;accountNotExistsError&#34;,&#10;    &#34;4107&#34;:&#34;agentNotExistsError&#34;,&#10;    &#34;4108&#34;:&#34;accountHasNoAgentError&#34;,&#10;    &#34;4109&#34;:&#34;registerAgentExistsError&#34;,&#10;    &#34;4110&#34;:&#34;registerAgentSymbolReservedError&#34;,&#10;    &#34;4111&#34;:&#34;registerAgentConflictSymbolError&#34;,&#10;    &#34;4200&#34;:&#34;navigateInTransitError&#34;,&#10;    &#34;4201&#34;:&#34;navigateInvalidDestinationError&#34;,&#10;    &#34;4202&#34;:&#34;navigateOutsideSystemError&#34;,&#10;    &#34;4203&#34;:&#34;navigateInsufficientFuelError&#34;,&#10;    &#34;4204&#34;:&#34;navigateSameDestinationError&#34;,&#10;    &#34;4205&#34;:&#34;shipExtractInvalidWaypointError&#34;,&#10;    &#34;4206&#34;:&#34;shipExtractPermissionError&#34;,&#10;    &#34;4207&#34;:&#34;shipJumpNoSystemError&#34;,&#10;    &#34;4208&#34;:&#34;shipJumpSameSystemError&#34;,&#10;    &#34;4210&#34;:&#34;shipJumpMissingModuleError&#34;,&#10;    &#34;4211&#34;:&#34;shipJumpNoValidWaypointError&#34;,&#10;    &#34;4212&#34;:&#34;shipJumpMissingAntimatterError&#34;,&#10;    &#34;4214&#34;:&#34;shipInTransitError&#34;,&#10;    &#34;4215&#34;:&#34;shipMissingSensorArraysError&#34;,&#10;    &#34;4216&#34;:&#34;purchaseShipCreditsError&#34;,&#10;    &#34;4217&#34;:&#34;shipCargoExceedsLimitError&#34;,&#10;    &#34;4218&#34;:&#34;shipCargoMissingError&#34;,&#10;    &#34;4219&#34;:&#34;shipCargoUnitCountError&#34;,&#10;    &#34;4220&#34;:&#34;shipSurveyVerificationError&#34;,&#10;    &#34;4221&#34;:&#34;shipSurveyExpirationError&#34;,&#10;    &#34;4222&#34;:&#34;shipSurveyWaypointTypeError&#34;,&#10;    &#34;4223&#34;:&#34;shipSurveyOrbitError&#34;,&#10;    &#34;4224&#34;:&#34;shipSurveyExhaustedError&#34;,&#10;    &#34;4225&#34;:&#34;shipRefuelDockedError&#34;,&#10;    &#34;4226&#34;:&#34;shipRefuelInvalidWaypointError&#34;,&#10;    &#34;4227&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4228&#34;:&#34;shipCargoFullError&#34;,&#10;    &#34;4229&#34;:&#34;shipJumpFromGateToGateError&#34;,&#10;    &#34;4230&#34;:&#34;waypointChartedError&#34;,&#10;    &#34;4231&#34;:&#34;shipTransferShipNotFound&#34;,&#10;    &#34;4232&#34;:&#34;shipTransferAgentConflict&#34;,&#10;    &#34;4233&#34;:&#34;shipTransferSameShipConflict&#34;,&#10;    &#34;4234&#34;:&#34;shipTransferLocationConflict&#34;,&#10;    &#34;4235&#34;:&#34;warpInsideSystemError&#34;,&#10;    &#34;4236&#34;:&#34;shipNotInOrbitError&#34;,&#10;    &#34;4237&#34;:&#34;shipInvalidRefineryGoodError&#34;,&#10;    &#34;4238&#34;:&#34;shipInvalidRefineryTypeError&#34;,&#10;    &#34;4239&#34;:&#34;shipMissingRefineryError&#34;,&#10;    &#34;4240&#34;:&#34;shipMissingSurveyorError&#34;,&#10;    &#34;4241&#34;:&#34;shipMissingWarpDriveError&#34;,&#10;    &#34;4242&#34;:&#34;shipMissingMineralProcessorError&#34;,&#10;    &#34;4243&#34;:&#34;shipMissingMiningLasersError&#34;,&#10;    &#34;4244&#34;:&#34;shipNotDockedError&#34;,&#10;    &#34;4245&#34;:&#34;purchaseShipNotPresentError&#34;,&#10;    &#34;4246&#34;:&#34;shipMountNoShipyardError&#34;,&#10;    &#34;4247&#34;:&#34;shipMissingMountError&#34;,&#10;    &#34;4248&#34;:&#34;shipMountInsufficientCreditsError&#34;,&#10;    &#34;4249&#34;:&#34;shipMissingPowerError&#34;,&#10;    &#34;4250&#34;:&#34;shipMissingSlotsError&#34;,&#10;    &#34;4251&#34;:&#34;shipMissingMountsError&#34;,&#10;    &#34;4252&#34;:&#34;shipMissingCrewError&#34;,&#10;    &#34;4253&#34;:&#34;shipExtractDestabilizedError&#34;,&#10;    &#34;4254&#34;:&#34;shipJumpInvalidOriginError&#34;,&#10;    &#34;4255&#34;:&#34;shipJumpInvalidWaypointError&#34;,&#10;    &#34;4256&#34;:&#34;shipJumpOriginUnderConstructionError&#34;,&#10;    &#34;4257&#34;:&#34;shipMissingGasProcessorError&#34;,&#10;    &#34;4258&#34;:&#34;shipMissingGasSiphonsError&#34;,&#10;    &#34;4259&#34;:&#34;shipSiphonInvalidWaypointError&#34;,&#10;    &#34;4260&#34;:&#34;shipSiphonPermissionError&#34;,&#10;    &#34;4261&#34;:&#34;waypointNoYieldError&#34;,&#10;    &#34;4262&#34;:&#34;shipJumpDestinationUnderConstructionError&#34;,&#10;    &#34;4500&#34;:&#34;acceptContractNotAuthorizedError&#34;,&#10;    &#34;4501&#34;:&#34;acceptContractConflictError&#34;,&#10;    &#34;4502&#34;:&#34;fulfillContractDeliveryError&#34;,&#10;    &#34;4503&#34;:&#34;contractDeadlineError&#34;,&#10;    &#34;4504&#34;:&#34;contractFulfilledError&#34;,&#10;    &#34;4505&#34;:&#34;contractNotAcceptedError&#34;,&#10;    &#34;4506&#34;:&#34;contractNotAuthorizedError&#34;,&#10;    &#34;4508&#34;:&#34;shipDeliverTermsError&#34;,&#10;    &#34;4509&#34;:&#34;shipDeliverFulfilledError&#34;,&#10;    &#34;4510&#34;:&#34;shipDeliverInvalidLocationError&#34;,&#10;    &#34;4511&#34;:&#34;existingContractError&#34;,&#10;    &#34;4600&#34;:&#34;marketTradeInsufficientCreditsError&#34;,&#10;    &#34;4601&#34;:&#34;marketTradeNoPurchaseError&#34;,&#10;    &#34;4602&#34;:&#34;marketTradeNotSoldError&#34;,&#10;    &#34;4603&#34;:&#34;marketNotFoundError&#34;,&#10;    &#34;4604&#34;:&#34;marketTradeUnitLimitError&#34;,&#10;    &#34;4700&#34;:&#34;waypointNoFactionError&#34;,&#10;    &#34;4800&#34;:&#34;constructionMaterialNotRequired&#34;,&#10;    &#34;4801&#34;:&#34;constructionMaterialFulfilled&#34;,&#10;    &#34;4802&#34;:&#34;shipConstructionInvalidLocationError&#34;&#10;  },&#10;  bpmn_error_code: get or else(get value(error_codes, error_code), error_code),&#10;  bpmn_error_message: substring(extract(error.message, &#34;\&#34;message\&#34;:\&#34;(\w|\d|\s|\.|\-)+&#34;)[1], 12),&#10;  bpmnError: bpmnError(bpmn_error_code, bpmn_error_message)&#10;}.bpmnError&#10;else null" />
+          <zeebe:header key="retryBackoff" value="PT1S" />
+        </zeebe:taskHeaders>
+        <zeebe:properties>
+          <zeebe:property name="custom_error_handling" value="by_error_name" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0547krs</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gyvae0</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=cargo.inventory" inputElement="cargo_good" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0r1s0pz" name="Contract fulfilled">
+      <bpmn:incoming>Flow_04nja0n</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1xvr51o" />
+    </bpmn:endEvent>
+    <bpmn:callActivity id="Activity_1600pno" name="Purchase mining drones">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="space-traders-purchase-ships" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=current_system" target="system" />
+          <zeebe:input source="=&#34;SHIP_MINING_DRONE&#34;" target="ship_type" />
+          <zeebe:output source="=new_ships" target="mining_drones" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qz8h1d</bpmn:incoming>
+      <bpmn:outgoing>Flow_0n3x562</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_06aljds" sourceRef="Activity_06bbvjy" targetRef="Activity_114rsg9" />
+    <bpmn:sequenceFlow id="Flow_0qz8h1d" sourceRef="Activity_114rsg9" targetRef="Activity_1600pno" />
+    <bpmn:sequenceFlow id="Flow_0n3x562" sourceRef="Activity_1600pno" targetRef="Activity_1ydhxyt" />
+  </bpmn:process>
+  <bpmn:error id="Error_1tvor7l" name="shipTransferShipNotFound" errorCode="shipTransferShipNotFound" />
+  <bpmn:error id="Error_0z34dx1" name="purchaseShipCreditsError" errorCode="purchaseShipCreditsError" />
+  <bpmn:error id="Error_1nkh7pw" name="shipCargoExceedsLimitError" errorCode="shipCargoExceedsLimitError" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="philipps-space-traders-mining-process">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="180" y="160" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="203" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ynng1r_di" bpmnElement="Activity_1x82no7">
+        <dc:Bounds x="270" y="138" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_02r5nzl_di" bpmnElement="Activity_06bbvjy">
+        <dc:Bounds x="420" y="138" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1g0wzuf_di" bpmnElement="Activity_114rsg9">
+        <dc:Bounds x="580" y="138" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0utfo7s_di" bpmnElement="Activity_1600pno">
+        <dc:Bounds x="740" y="136" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_08ii8b2_di" bpmnElement="Activity_1lqilcv">
+        <dc:Bounds x="1160" y="460" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0oqbymo_di" bpmnElement="Activity_01feyxg">
+        <dc:Bounds x="2170" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1axuzad_di" bpmnElement="Gateway_1axuzad" isMarkerVisible="true">
+        <dc:Bounds x="2515" y="473" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2514" y="436" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03qxiwe_di" bpmnElement="Event_16czv9z">
+        <dc:Bounds x="2662" y="602" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2642" y="645" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14j3yst_di" bpmnElement="Event_0hs808n">
+        <dc:Bounds x="1122" y="592" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1101" y="635" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1807rhv_di" bpmnElement="Gateway_0leuhd4">
+        <dc:Bounds x="1055" y="153" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_01psfad" bpmnElement="Activity_0j6x3s9">
+        <dc:Bounds x="1480" y="460" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_05prfqm" bpmnElement="Activity_0sigf2m">
+        <dc:Bounds x="1990" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0fvdqgf" bpmnElement="Activity_15vxu1m">
+        <dc:Bounds x="1320" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1q1oksc" bpmnElement="Activity_0swt9xh">
+        <dc:Bounds x="1160" y="138" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_14d2o52" bpmnElement="Activity_0i6l9ga">
+        <dc:Bounds x="1650" y="460" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_161kf8s" bpmnElement="Activity_05qdjt4">
+        <dc:Bounds x="1820" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06me1wc_di" bpmnElement="Activity_0iijzms">
+        <dc:Bounds x="2340" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1j8djhg_di" bpmnElement="Event_0r1s0pz">
+        <dc:Bounds x="2662" y="480" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2641" y="523" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0pyalyh_di" bpmnElement="Activity_1ydhxyt">
+        <dc:Bounds x="900" y="138" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0r4nwnl_di" bpmnElement="Activity_0r4nwnl" isExpanded="true">
+        <dc:Bounds x="1340" y="100" width="820" height="260" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1i4irnm_di" bpmnElement="Event_1i4irnm">
+        <dc:Bounds x="1380" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_076bjnk" bpmnElement="Activity_147u3d3">
+        <dc:Bounds x="1480" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0iss4p5_di" bpmnElement="Gateway_0iss4p5" isMarkerVisible="true">
+        <dc:Bounds x="1635" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1guejrv_di" bpmnElement="Event_18uxmtf">
+        <dc:Bounds x="1380" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1374" y="315" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wq7x90_di" bpmnElement="Activity_1rh6jyr">
+        <dc:Bounds x="1750" y="140" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ww17u1_di" bpmnElement="Event_070m9me">
+        <dc:Bounds x="1732" y="272" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1729" y="315" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_17yamp4_di" bpmnElement="Gateway_17yamp4" isMarkerVisible="true">
+        <dc:Bounds x="1965" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0o7e9et_di" bpmnElement="Event_1w76m6z">
+        <dc:Bounds x="2082" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2076" y="205" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11n6zlp_di" bpmnElement="Event_03zshuu">
+        <dc:Bounds x="1732" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1762.5" y="236" width="53" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_05fvlmf_di" bpmnElement="Event_0y3lme9">
+        <dc:Bounds x="1832" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1863" y="236" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1v1vi94_di" bpmnElement="Flow_1v1vi94">
+        <di:waypoint x="1416" y="180" />
+        <di:waypoint x="1480" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nkryq4_di" bpmnElement="Flow_0nkryq4">
+        <di:waypoint x="1580" y="180" />
+        <di:waypoint x="1635" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1350v96_di" bpmnElement="Flow_1350v96">
+        <di:waypoint x="1750" y="238" />
+        <di:waypoint x="1750" y="272" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ek7wqq_di" bpmnElement="Flow_0ek7wqq">
+        <di:waypoint x="1685" y="180" />
+        <di:waypoint x="1750" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dxxpaz_di" bpmnElement="Flow_0dxxpaz">
+        <di:waypoint x="1732" y="290" />
+        <di:waypoint x="1660" y="290" />
+        <di:waypoint x="1660" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nmrvcq_di" bpmnElement="Flow_0nmrvcq">
+        <di:waypoint x="1416" y="290" />
+        <di:waypoint x="1530" y="290" />
+        <di:waypoint x="1530" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0e4kqx3_di" bpmnElement="Flow_0e4kqx3">
+        <di:waypoint x="1850" y="180" />
+        <di:waypoint x="1965" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v0x9wv_di" bpmnElement="Flow_1v0x9wv">
+        <di:waypoint x="2015" y="180" />
+        <di:waypoint x="2082" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06s2mme_di" bpmnElement="Flow_06s2mme">
+        <di:waypoint x="1850" y="238" />
+        <di:waypoint x="1850" y="290" />
+        <di:waypoint x="1990" y="290" />
+        <di:waypoint x="1990" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1727dj3_di" bpmnElement="Flow_1727dj3">
+        <di:waypoint x="216" y="178" />
+        <di:waypoint x="270" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jolgtx_di" bpmnElement="Flow_0jolgtx">
+        <di:waypoint x="370" y="178" />
+        <di:waypoint x="420" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0547krs_di" bpmnElement="Flow_0547krs">
+        <di:waypoint x="2270" y="500" />
+        <di:waypoint x="2340" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04nja0n_di" bpmnElement="Flow_04nja0n">
+        <di:waypoint x="2565" y="498" />
+        <di:waypoint x="2662" y="498" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2575" y="483" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19h7ghj_di" bpmnElement="Flow_19h7ghj">
+        <di:waypoint x="2540" y="523" />
+        <di:waypoint x="2540" y="620" />
+        <di:waypoint x="2662" y="620" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2577" y="603" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tqu4me_di" bpmnElement="Flow_0tqu4me">
+        <di:waypoint x="1158" y="610" />
+        <di:waypoint x="1210" y="610" />
+        <di:waypoint x="1210" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1pvgqia" bpmnElement="Flow_0336xq0">
+        <di:waypoint x="1580" y="500" />
+        <di:waypoint x="1650" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jxx8mk_di" bpmnElement="Flow_0jxx8mk">
+        <di:waypoint x="1080" y="203" />
+        <di:waypoint x="1080" y="500" />
+        <di:waypoint x="1160" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08349j0_di" bpmnElement="Flow_08349j0">
+        <di:waypoint x="1000" y="178" />
+        <di:waypoint x="1055" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wgec1t_di" bpmnElement="Flow_1wgec1t">
+        <di:waypoint x="1105" y="178" />
+        <di:waypoint x="1160" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1k97iv1_di" bpmnElement="Flow_1k97iv1">
+        <di:waypoint x="1260" y="178" />
+        <di:waypoint x="1340" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0t2ka4o_di" bpmnElement="Flow_0t2ka4o">
+        <di:waypoint x="1260" y="500" />
+        <di:waypoint x="1320" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kcsw01_di" bpmnElement="Flow_0kcsw01">
+        <di:waypoint x="1420" y="500" />
+        <di:waypoint x="1480" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0935e1b_di" bpmnElement="Flow_0935e1b">
+        <di:waypoint x="1750" y="500" />
+        <di:waypoint x="1820" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ft70si_di" bpmnElement="Flow_1ft70si">
+        <di:waypoint x="1920" y="500" />
+        <di:waypoint x="1990" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yng76a_di" bpmnElement="Flow_1yng76a">
+        <di:waypoint x="2090" y="500" />
+        <di:waypoint x="2170" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gyvae0_di" bpmnElement="Flow_0gyvae0">
+        <di:waypoint x="2440" y="498" />
+        <di:waypoint x="2515" y="498" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06aljds_di" bpmnElement="Flow_06aljds">
+        <di:waypoint x="520" y="178" />
+        <di:waypoint x="580" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qz8h1d_di" bpmnElement="Flow_0qz8h1d">
+        <di:waypoint x="680" y="178" />
+        <di:waypoint x="740" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0n3x562_di" bpmnElement="Flow_0n3x562">
+        <di:waypoint x="840" y="176" />
+        <di:waypoint x="870" y="176" />
+        <di:waypoint x="870" y="178" />
+        <di:waypoint x="900" y="178" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
