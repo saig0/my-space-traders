@@ -10,6 +10,8 @@ This process automates the mining process. It contains the following steps:
 - The command ship navigates to the contract delivery point
 - The command ship sells the resources and delivers the contract goods
 
+![BPMN process](../assets/spacetraders-advanced-mining.png)
+
 ## Usage
 
 1. Deploy the [process blocks](https://github.com/camunda-community-hub/camunda-space-traders/tree/main/process-blocks)
